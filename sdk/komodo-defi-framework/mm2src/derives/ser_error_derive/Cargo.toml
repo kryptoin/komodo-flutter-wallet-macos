@@ -1,0 +1,15 @@
+[package]
+name = "ser_error_derive"
+version = "0.1.0"
+authors = ["Sergey O. Boyko <sergey.boyko0791@gmail.com>"]
+edition = "2018"
+
+[lib]
+proc-macro = true
+doctest = false
+
+[dependencies]
+proc-macro2.workspace = true
+quote.workspace = true
+ser_error = { path = "../ser_error" }
+syn = {  workspace = true, features = ["full"] }

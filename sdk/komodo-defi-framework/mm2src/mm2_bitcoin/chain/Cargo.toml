@@ -1,0 +1,21 @@
+[package]
+name = "chain"
+version = "0.1.0"
+authors = ["debris <marek.kotewicz@gmail.com>"]
+edition = "2015"
+
+[lib]
+doctest = false
+
+[features]
+default = ["ext-bitcoin"]
+# TODO: Unify secp256k1 versions across workspace (v0.20 vs v0.24) to remove ext-bitcoin feature.
+ext-bitcoin = ["bitcoin"]
+
+[dependencies]
+rustc-hex.workspace = true
+bitcrypto = { path = "../crypto" }
+primitives = { path = "../primitives" }
+serialization = { path = "../serialization" }
+serialization_derive = { path = "../serialization_derive" }
+bitcoin = { workspace = true, optional = true }

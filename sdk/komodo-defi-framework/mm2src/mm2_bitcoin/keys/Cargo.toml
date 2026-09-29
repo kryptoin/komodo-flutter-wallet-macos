@@ -1,0 +1,21 @@
+[package]
+name = "keys"
+version = "0.1.0"
+authors = ["debris <marek.kotewicz@gmail.com>"]
+edition = "2015"
+
+[lib]
+doctest = false
+
+[dependencies]
+bech32.workspace = true
+bs58.workspace = true
+bitcrypto = { path = "../crypto" }
+derive_more.workspace = true
+lazy_static.workspace = true
+primitives = { path = "../primitives" }
+rand = { version = "0.6", features = ["wasm-bindgen"] }
+rustc-hex.workspace = true
+secp256k1 = { workspace = true, features = ["rand", "recovery"] }
+serde = { workspace = true, features = ["derive"] }
+serde_derive.workspace = true

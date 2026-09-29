@@ -1,0 +1,85 @@
+{
+  "api": {
+    "api_commit_hash": "968f32a6bccf20f286d1b8e2520b62ebe769522b",
+    "branch": "v2.7.0-beta",
+    "fetch_at_build_enabled": true,
+    "concurrent_downloads_enabled": true,
+    "source_urls": [
+      "https://api.github.com/repos/ShorelineCrypto/komodo-defi-framework"
+    ],
+    "platforms": {
+      "web": {
+        "matching_pattern": "^(?:kdf_[a-f0-9]{7,40}-wasm|mm2_[a-f0-9]{7,40}-wasm|mm2-[a-f0-9]{7,40}-wasm)\\.zip$",
+        "valid_zip_sha256_checksums": [
+          "7aa983bbb8c87e127f73e09a42db7c67b47160d11fe2c27c9f46a6026fa0bf5e"
+        ],
+        "path": "web/kdf/bin"
+      },
+      "ios": {
+        "matching_pattern": "^(?:kdf_[a-f0-9]{7,40}-ios-aarch64|mm2_[a-f0-9]{7,40}-ios-aarch64|mm2-[a-f0-9]{7,40}-ios-aarch64-CI)\\.zip$",
+        "valid_zip_sha256_checksums": [
+          "1e69d1acc7d45a6535a93a6df40a928b58031482c6184df6ee0b17aac3919e2d"
+        ],
+        "path": "ios"
+      },
+      "macos": {
+        "matching_pattern": "^(?:kdf-macos-universal2-[a-f0-9]{7,40}|kdf_[a-f0-9]{7,40}-mac-universal)\\.zip$",
+        "matching_preference": ["universal2", "mac-arm64"],
+        "valid_zip_sha256_checksums": [
+          "ad731823ef13b14ad0fbf192d82df76514d2f83c01183602dd2ddf1b3b608b65"
+        ],
+        "path": "macos/bin"
+      },
+      "windows": {
+        "matching_pattern": "^(?:kdf_[a-f0-9]{7,40}-win-x86-64|mm2_[a-f0-9]{7,40}-win-x86-64|mm2-[a-f0-9]{7,40}-Win64)\\.zip$",
+        "valid_zip_sha256_checksums": [
+          "713cc79958332265c1a5bb7b8e6ba895882eb4b7ca95abf2a71ab0c56f5e3ece"
+        ],
+        "path": "windows/bin"
+      },
+      "android-armv7": {
+        "matching_pattern": "^(?:kdf_[a-f0-9]{7,40}-android-armv7|mm2_[a-f0-9]{7,40}-android-armv7|mm2-[a-f0-9]{7,40}-android-armv7-CI)\\.zip$",
+        "valid_zip_sha256_checksums": [
+          "ca1852c1d0ea82fb6b628c1e1ac666313f58acb558a1fd1e72c0ef8ce866f542"
+        ],
+        "path": "android/app/src/main/cpp/libs/armeabi-v7a"
+      },
+      "android-aarch64": {
+        "matching_pattern": "^(?:kdf_[a-f0-9]{7,40}-android-aarch64|mm2_[a-f0-9]{7,40}-android-aarch64|mm2-[a-f0-9]{7,40}-android-aarch64-CI)\\.zip$",
+        "valid_zip_sha256_checksums": [
+          "4548493ca1a05b8bd3e1853c2cd812c5cec49f20ab4f4550d014c90f8498bb4f"
+        ],
+        "path": "android/app/src/main/cpp/libs/arm64-v8a"
+      },
+      "linux": {
+        "matching_pattern": "^(?:kdf_[a-f0-9]{7,40}-linux-x86-64|mm2_[a-f0-9]{7,40}-linux-x86-64|mm2-[a-f0-9]{7,40}-Linux-Release)\\.zip$",
+        "valid_zip_sha256_checksums": [
+          "cf80e5d5ae78605d6f0f6a806aa9ae5b83bbee0ef79ccd5ad85022ae2a5d7d27"
+        ],
+        "path": "linux/bin"
+      }
+    }
+  },
+  "coins": {
+    "fetch_at_build_enabled": true,
+    "update_commit_on_build": true,
+    "bundled_coins_repo_commit": "f611676c62ee31f6a3b38b42196b6938b97883e1",
+    "coins_repo_api_url": "https://api.github.com/repos/ShorelineCrypto/coins",
+    "coins_repo_content_url": "https://raw.githubusercontent.com/ShorelineCrypto/coins",
+    "coins_repo_branch": "cheetahdex",
+    "runtime_updates_enabled": true,
+    "mapped_files": {
+      "assets/config/coins_config.json": "utils/coins_config_unfiltered.json",
+      "assets/config/coins.json": "coins",
+      "assets/config/seed_nodes.json": "seed-nodes.json"
+    },
+    "mapped_folders": {
+      "assets/coin_icons/png/": "icons"
+    },
+    "concurrent_downloads_enabled": false,
+    "cdn_branch_mirrors": {
+      "master": "https://gleecbtc.github.io/coins",
+      "main": "https://gleecbtc.github.io/coins"
+    }
+  }
+}

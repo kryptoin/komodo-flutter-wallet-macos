@@ -1,0 +1,24 @@
+[package]
+name = "rpc"
+version = "0.1.0"
+authors = ["Ethcore <admin@ethcore.io>"]
+edition = "2015"
+
+[lib]
+doctest = false
+
+[dependencies]
+log.workspace = true
+serde.workspace = true
+serde_json = { workspace = true, features = ["preserve_order", "raw_value"] }
+serde_derive.workspace = true
+rustc-hex.workspace = true
+
+serialization = { path = "../serialization" }
+chain = { path = "../chain", default-features = false }
+primitives = { path = "../primitives" }
+keys = { path = "../keys" }
+script = { path = "../script" }
+
+[dev-dependencies]
+lazy_static.workspace = true

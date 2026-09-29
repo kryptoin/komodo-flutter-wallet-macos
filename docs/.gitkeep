@@ -1,0 +1,2 @@
+# Reserved for future design docs. Git does not track empty directories,
+# so this placeholder keeps `docs/` present in the first commit.

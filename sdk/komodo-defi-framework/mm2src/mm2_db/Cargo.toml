@@ -1,0 +1,30 @@
+[package]
+name = "mm2_db"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+doctest = false
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+async-trait.workspace = true
+common = { path = "../common" }
+derive_more.workspace = true
+enum_derives = { path = "../derives/enum_derives" }
+futures = { workspace = true, features = ["compat", "async-await", "thread-pool"] }
+itertools.workspace = true
+hex.workspace = true
+js-sys.workspace = true
+lazy_static.workspace = true
+mm2_core = { path = "../mm2_core" }
+mm2_err_handle = { path = "../mm2_err_handle" }
+mm2_number = { path = "../mm2_number" }
+num-traits.workspace = true
+primitives = { path = "../mm2_bitcoin/primitives" }
+rand.workspace = true 
+serde.workspace = true
+serde_json = { workspace = true, features = ["preserve_order", "raw_value"] }
+wasm-bindgen.workspace = true
+wasm-bindgen-futures.workspace = true 
+wasm-bindgen-test.workspace = true
+web-sys = { workspace = true, features = ["console", "CloseEvent", "DomException", "ErrorEvent", "IdbDatabase", "IdbCursor", "IdbCursorWithValue", "IdbCursorDirection", "IdbFactory", "IdbIndex", "IdbIndexParameters", "IdbObjectStore", "IdbObjectStoreParameters", "IdbOpenDbRequest", "IdbKeyRange", "IdbTransaction", "IdbTransactionMode", "IdbVersionChangeEvent", "MessageEvent", "WebSocket"] }

@@ -1,0 +1,27 @@
+.vscode
+cmake-build-debug
+
+# Ignoring the Dockerfile allows us to change it without invalidating the "COPY ." step.
+/Dockerfile
+
+!/target/release/mm2
+!/target/debug/mm2
+!/target/release/kdf
+!/target/debug/kdf
+/mm2src/*/target
+
+/build
+/x64
+/marketmaker_depends
+
+/js/node_modules
+/js/*.dll
+/js/*.wasm
+/js/mm2
+/js/mm2.exe
+/js/kdf
+/js/kdf.exe
+/wasm-build.log
+
+# Opt out from history in order to speed the `COPY .` up.
+/.git

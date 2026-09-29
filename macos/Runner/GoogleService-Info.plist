@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- LOCAL DEVELOPMENT ONLY: dummy values so [FIRApp configure] passes
+	     validation at startup. Analytics events go nowhere.
+	     Replace with the real file from the Firebase console
+	     (Project settings > Your apps > GoogleService-Info.plist)
+	     for any TestFlight / production build. -->
+	<key>API_KEY</key>
+	<string>Axxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</string>
+	<key>GCM_SENDER_ID</key>
+	<string>123456789012</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.komodo.wallet</string>
+	<key>PROJECT_ID</key>
+	<string>local-dev-dummy</string>
+	<key>STORAGE_BUCKET</key>
+	<string>local-dev-dummy.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:123456789012:ios:0123456789abcdef</string>
+</dict>
+</plist>

@@ -1,0 +1,19 @@
+name: dragon_charts_flutter
+description: A lightweight and highly customizable charting library for Flutter.
+version: 0.1.1-dev.4
+homepage: https://komodoplatform.com
+repository: https://github.com/ShorelineCrypto/komodo-defi-sdk-flutter
+
+environment:
+  # sdk: '>=2.17.0 <4.0.0'
+  sdk: ">=3.9.0 <4.0.0"
+
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  very_good_analysis: ^9.0.0

@@ -1,0 +1,83 @@
+[package]
+name = "common"
+version = "0.1.0"
+links = "marketmaker-mainnet-lib"
+edition = "2018"
+
+[lib]
+name = "common"
+path = "common.rs"
+doctest = false
+
+[features]
+for-tests = []
+track-ctx-pointer = ["shared_ref_counter/enable", "shared_ref_counter/log"]
+
+[dependencies]
+arrayref.workspace = true
+async-trait.workspace = true
+backtrace.workspace = true
+base64.workspace = true
+bytes.workspace = true
+cfg-if.workspace = true
+compatible-time.workspace = true
+crossbeam.workspace = true
+env_logger.workspace = true
+derive_more.workspace = true
+fnv.workspace = true
+futures01.workspace = true
+futures = { workspace = true, features = ["compat", "async-await", "thread-pool"] }
+futures-timer.workspace = true
+gstuff.workspace = true
+hex.workspace = true
+http.workspace = true
+http-body.workspace = true
+itertools.workspace = true
+lazy_static.workspace = true
+log.workspace = true
+parking_lot = { workspace = true }
+parking_lot_core.workspace = true
+paste.workspace = true
+primitive-types.workspace = true
+rand = { workspace = true, features = ["std", "small_rng"] }
+rustc-hash.workspace = true
+regex.workspace = true
+serde.workspace = true
+serde_derive.workspace = true
+serde_json = { workspace = true, features = ["preserve_order", "raw_value"] }
+ser_error = { path = "../derives/ser_error" }
+ser_error_derive = { path = "../derives/ser_error_derive" }
+sha2.workspace = true
+shared_ref_counter = { path = "shared_ref_counter", optional = true }
+uuid.workspace = true 
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+chrono = { workspace = true, features = ["wasmbind"] }
+js-sys.workspace = true
+serde_repr.workspace = true
+serde-wasm-bindgen.workspace = true 
+wasm-bindgen.workspace = true
+wasm-bindgen-futures.workspace = true
+wasm-bindgen-test.workspace = true
+web-sys = { workspace = true, features = ["console", "CloseEvent", "DomException", "ErrorEvent", "IdbDatabase", "IdbCursor", "IdbCursorWithValue", "IdbFactory", "IdbIndex", "IdbIndexParameters", "IdbObjectStore", "IdbObjectStoreParameters", "IdbOpenDbRequest", "IdbKeyRange", "IdbTransaction", "IdbTransactionMode", "IdbVersionChangeEvent", "MessageEvent", "WebSocket"] }
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+anyhow.workspace = true
+chrono.workspace = true 
+hyper = { workspace = true, features = ["client", "http2", "server", "tcp"] }
+# using webpki-tokio to avoid rejecting valid certificates
+# got "invalid certificate: UnknownIssuer" for https://ropsten.infura.io on iOS using default-features
+hyper-rustls = { workspace = true, default-features = false, features = ["http1", "http2", "webpki-tokio"] }
+libc.workspace = true
+lightning.workspace = true
+tokio = { workspace = true, features = ["io-util", "rt-multi-thread", "net"] }
+
+[target.'cfg(windows)'.dependencies]
+winapi.workspace = true
+
+[target.'cfg(not(windows))'.dependencies]
+findshlibs.workspace = true
+
+[build-dependencies]
+cc.workspace = true
+gstuff.workspace = true

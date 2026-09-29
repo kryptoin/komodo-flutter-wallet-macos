@@ -1,0 +1,13 @@
+[package]
+name = "shared_ref_counter"
+version = "0.1.0"
+edition = "2018"
+
+[lib]
+doctest = false
+
+[features]
+enable = []
+
+[dependencies]
+log = { workspace = true, optional = true }

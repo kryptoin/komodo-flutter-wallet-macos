@@ -1,0 +1,50 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+
+/// Default trusted domains for the WebView content blockers
+const List<String> kDefaultTrustedDomainFilters = [
+  r'komodo\.banxa\.com.*',
+  if (kDebugMode) r'app\.demo\.ramp\.network.*',
+  r'app\.ramp\.network.*',
+  r'embed\.bitrefill\.com.*',
+  if (kDebugMode) r'komodo\.banxa-sandbox\.com.*',
+  r'app\.komodoplatform\.com.*',
+];
+
+/// Factory methods for creating webview settings for specific providers
+class FiatProviderWebViewSettings {
+  /// Creates secure webview settings for fiat providers like Banxa, Ramp, etc.
+  ///
+  /// The [trustedDomainFilters] parameter allows filtering content to only
+  /// trusted domains for security.
+  static InAppWebViewSettings createSecureProviderSettings({
+    List<String> trustedDomainFilters = kDefaultTrustedDomainFilters,
+  }) {
+    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
+    return InAppWebViewSettings(
+      isInspectable: kDebugMode,
+      // https://docs.banxa.com/docs/referral-link#%F0%9F%97%94-iframe
+      iframeAllow: 'payment; encrypted-media; microphone; camera; midi',
+      iframeSandbox: {
+        // Required for cookies and localStorage access
+        Sandbox.ALLOW_SAME_ORIGIN,
+        // Required for dynamic iframe content to load in Banxa and Ramp
+        // webviews.
+        Sandbox.ALLOW_SCRIPTS,
+        // Required for Ramp and Banxa form submissions throughout the KYC
+        // and payment process.
+        Sandbox.ALLOW_FORMS,
+        // Required for Ramp "Check transaction status" button after payment
+        // to work.
+        Sandbox.ALLOW_POPUPS,
+        // Deliberately NOT including ALLOW_TOP_NAVIGATION to prevent
+        // parent navigation
+      },
+      // TODO: revisit & possibly fork repo to add support for more platforms
+      // The whitelist approach is flaky due to the nested iframes used by
+      // Banxa, which is beyond our control and can change at any time at their 
+      // discretion. Not to mention Ramp.
+      contentBlockers: [],
+    );
+  }
+}

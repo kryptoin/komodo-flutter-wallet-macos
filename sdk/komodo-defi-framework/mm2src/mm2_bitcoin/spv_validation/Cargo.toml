@@ -1,0 +1,27 @@
+[package]
+name = "spv_validation"
+version = "0.1.0"
+authors = ["Roman Sztergbaum <rmscastle@gmail.com>"]
+edition = "2018"
+
+[lib]
+doctest = false
+
+[dependencies]
+async-trait.workspace = true
+chain = { path = "../chain", default-features = false }
+derive_more.workspace = true
+keys = {path = "../keys"}
+primitives = { path = "../primitives" }
+ripemd160.workspace = true
+rustc-hex.workspace = true
+serde.workspace = true
+serialization = { path = "../serialization" }
+sha2.workspace = true
+test_helpers = { path = "../test_helpers" }
+
+[dev-dependencies]
+common = { path = "../../common" }
+lazy_static.workspace = true
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true, features = ["preserve_order", "raw_value"] }

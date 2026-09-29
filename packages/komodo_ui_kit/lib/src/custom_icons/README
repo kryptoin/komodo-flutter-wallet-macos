@@ -1,0 +1,7 @@
+The icons in this folder are generated using SVGs from our UI designs. The SVGs are converted to a font using https://www.fluttericon.com/. The font is then imported into the project and used as a custom icon font.
+
+NB: Ensure custom icons follow the Material Design guidelines for icons. https://m3.material.io/styles/icons/designing-icons
+The svg source files are located in the `source_assets` folder.
+
+Steps to add a new icon:
+[TODO]

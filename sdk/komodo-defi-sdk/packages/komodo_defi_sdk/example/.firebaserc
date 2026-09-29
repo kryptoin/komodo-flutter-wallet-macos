@@ -1,0 +1,15 @@
+{
+    "projects": {
+        "default": "gleec-defi-sdk"
+    },
+    "targets": {
+        "gleec-defi-sdk": {
+            "hosting": {
+                "gleec-sdk": [
+                    "gleec-sdk"
+                ]
+            }
+        }
+    },
+    "etags": {}
+}

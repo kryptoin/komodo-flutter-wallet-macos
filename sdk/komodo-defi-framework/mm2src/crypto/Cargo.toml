@@ -1,0 +1,65 @@
+[package]
+name = "crypto"
+version = "1.0.0"
+edition = "2018"
+
+[lib]
+doctest = false
+
+[dependencies]
+aes.workspace = true
+argon2.workspace = true
+arrayref.workspace = true
+async-trait.workspace = true
+base64.workspace = true
+bip32.workspace = true
+bip39.workspace = true
+bitcrypto = { path = "../mm2_bitcoin/crypto" }
+bs58.workspace = true
+cbc.workspace = true
+cipher.workspace = true
+common = { path = "../common" }
+derive_more.workspace = true
+ed25519-dalek-bip32.workspace = true
+enum_derives = { path = "../derives/enum_derives" }
+enum-primitive-derive.workspace = true
+futures.workspace = true
+hex.workspace = true
+hmac.workspace = true
+http.workspace = true
+hw_common = { path = "../hw_common" }
+keys = { path = "../mm2_bitcoin/keys" }
+lazy_static.workspace = true
+mm2_core = { path = "../mm2_core" }
+mm2_err_handle = { path = "../mm2_err_handle" }
+num-traits.workspace = true
+parking_lot = { workspace = true }
+primitives = { path = "../mm2_bitcoin/primitives" }
+rpc = { path = "../mm2_bitcoin/rpc" }
+rpc_task = { path = "../rpc_task" }
+rustc-hex.workspace = true
+secp256k1.workspace = true
+ser_error = { path = "../derives/ser_error" }
+ser_error_derive = { path = "../derives/ser_error_derive" }
+serde.workspace = true
+serde_derive.workspace = true
+serde_json = { workspace = true, features = ["preserve_order", "raw_value"] }
+sha2.workspace = true
+thiserror.workspace = true
+trezor = { path = "../trezor" }
+zeroize.workspace = true
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+cfg-if.workspace = true
+mm2_eth = { path = "../mm2_eth" }
+mm2_metamask = { path = "../mm2_metamask" }
+wasm-bindgen-test.workspace = true
+web3 = { workspace = true, default-features = false }
+
+
+[dev-dependencies]
+cfg-if.workspace = true
+tokio.workspace = true
+
+[features]
+trezor-udp = ["trezor/trezor-udp"]

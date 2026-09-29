@@ -1,0 +1,16 @@
+name: komodo_persistence_layer
+description: Persistence layer abstractions for Flutter/Dart.
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: ">=3.8.1 <4.0.0"
+
+# Add regular dependencies here.
+dependencies:
+  # Approved via https://github.com/KomodoPlatform/komodo-wallet/pull/1106
+  hive: ^2.2.3 # Changed from git to pub.dev because git dependencies are not allowed in published packages
+
+dev_dependencies:
+  lints: ^5.1.1
+  test: ^1.24.0

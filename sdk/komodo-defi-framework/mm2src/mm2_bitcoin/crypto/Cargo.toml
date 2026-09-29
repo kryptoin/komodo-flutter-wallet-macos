@@ -1,0 +1,18 @@
+[package]
+name = "bitcrypto"
+version = "0.1.0"
+authors = ["debris <marek.kotewicz@gmail.com>"]
+edition = "2015"
+
+[lib]
+doctest = false
+
+[dependencies]
+groestl = "0.9"
+primitives = { path = "../primitives" }
+ripemd160.workspace = true
+sha-1.workspace = true
+sha2.workspace = true
+sha3.workspace = true
+siphasher.workspace = true
+serialization = { path = "../serialization" }

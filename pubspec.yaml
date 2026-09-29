@@ -1,0 +1,101 @@
+name: web_dex
+description: Komodo Flutter Wallet
+version: 1.0.0+1
+publish_to: none
+
+environment:
+  sdk: ">=3.8.1 <4.0.0"
+  flutter: ">=3.35.3"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  flutter_bloc: ^9.1.1
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  get_it: ^8.2.0
+  path_provider: ^2.1.5
+  easy_localization: ^3.0.7+1
+  package_info_plus: ^9.0.1
+  universal_html: ^2.3.0
+  flutter_window_close: ^1.3.0
+  feedback: ^3.2.0
+  window_size: ^0.2.0
+  url_launcher: ^6.3.2
+  firebase_analytics: ^12.6.0
+  firebase_core: ^4.15.0
+  matomo_tracker: ^6.1.0
+  bloc_concurrency: ^0.3.0
+  file_picker: ^11.0.3
+  encrypt: ^5.0.3
+  flutter_inappwebview: ^6.1.5
+  flutter_svg: ^2.3.0
+  qr_flutter: ^4.1.0
+  ntp: ^2.0.0
+  formz: ^0.8.1
+  flutter_markdown: ^0.7.7+1
+  video_player: ^2.14.0
+  flutter_slidable: ^4.0.3
+  badges: ^4.0.1
+  
+  # Path dependencies for internal SDK and packages
+  komodo_defi_sdk:
+    path: sdk/komodo-defi-sdk/packages/komodo_defi_sdk
+  komodo_defi_types:
+    path: sdk/komodo-defi-sdk/packages/komodo_defi_types
+  komodo_cex_market_data:
+    path: sdk/komodo-defi-sdk/packages/komodo_cex_market_data
+  komodo_ui:
+    path: sdk/komodo-defi-sdk/packages/komodo_ui
+  dragon_logs:
+    path: sdk/komodo-defi-sdk/packages/dragon_logs
+  dragon_charts_flutter:
+    path: sdk/komodo-defi-sdk/packages/dragon_charts_flutter
+  app_theme:
+    path: app_theme
+  komodo_ui_kit:
+    path: packages/komodo_ui_kit
+  komodo_persistence_layer:
+    path: packages/komodo_persistence_layer
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+  # NOTE: Flutter expands asset directories non-recursively (direct files
+  # only), so every leaf directory must be listed explicitly. The bare
+  # `assets/` entry alone bundles nothing since it contains only subdirs.
+  assets:
+    - assets/
+    - assets/app_icon/
+    - assets/blockchain_icons/svg/32px/
+    - assets/custom_icons/
+    - assets/custom_icons/16px/
+    - assets/fallback_fonts/roboto/v20/
+    - assets/fiat/fiat_icons_square/
+    - assets/fiat/providers/
+    - assets/flags/
+    - assets/fonts/
+    - assets/logo/
+    - assets/nav_icons/desktop/dark/
+    - assets/nav_icons/desktop/light/
+    - assets/nav_icons/mobile/
+    - assets/others/
+    - assets/translations/
+    - assets/ui_icons/
+    - assets/web_pages/
+
+  fonts:
+    - family: Manrope
+      fonts:
+        - asset: assets/fonts/Manrope-Regular.ttf
+        - asset: assets/fonts/Manrope-Medium.ttf
+        - asset: assets/fonts/Manrope-Light.ttf
+        - asset: assets/fonts/Manrope-ExtraLight.ttf
+        - asset: assets/fonts/Manrope-Bold.ttf
+        - asset: assets/fonts/Manrope-ExtraBold.ttf

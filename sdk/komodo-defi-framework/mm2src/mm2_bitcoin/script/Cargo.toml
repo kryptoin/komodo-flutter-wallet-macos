@@ -1,0 +1,18 @@
+[package]
+name = "script"
+version = "0.1.0"
+authors = ["debris <marek.kotewicz@gmail.com>"]
+edition = "2015"
+
+[lib]
+doctest = false
+
+[dependencies]
+bitcrypto = { path = "../crypto" }
+chain = { path = "../chain", default-features = false }
+keys = { path = "../keys" }
+primitives = { path = "../primitives" }
+serde.workspace = true
+serialization = { path = "../serialization" }
+log.workspace = true
+blake2b_simd.workspace = true

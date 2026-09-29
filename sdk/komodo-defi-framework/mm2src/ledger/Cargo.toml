@@ -1,0 +1,21 @@
+[package]
+name = "ledger"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+async-trait.workspace = true
+byteorder.workspace = true
+common = { path = "../common" }
+derive_more.workspace = true
+futures = { workspace = true, features = ["compat", "async-await"] }
+hw_common = { path = "../hw_common" }
+serde.workspace = true
+serde_derive.workspace = true
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+js-sys.workspace = true
+wasm-bindgen.workspace.workspace = true
+wasm-bindgen-futures.workspace = true
+wasm-bindgen-test.workspace = true
+web-sys.workspace = true 

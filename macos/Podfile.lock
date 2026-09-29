@@ -1,0 +1,35 @@
+PODS:
+  - flutter_inappwebview_macos (0.0.1):
+    - FlutterMacOS
+    - OrderedSet (~> 6.0.3)
+  - FlutterMacOS (1.0.0)
+  - komodo_defi_framework (0.0.1):
+    - FlutterMacOS
+  - OrderedSet (6.0.3)
+
+DEPENDENCIES:
+  - flutter_inappwebview_macos (from `Flutter/ephemeral/.symlinks/plugins/flutter_inappwebview_macos/macos`)
+  - FlutterMacOS (from `Flutter/ephemeral`)
+  - komodo_defi_framework (from `Flutter/ephemeral/.symlinks/plugins/komodo_defi_framework/macos`)
+
+SPEC REPOS:
+  trunk:
+    - OrderedSet
+
+EXTERNAL SOURCES:
+  flutter_inappwebview_macos:
+    :path: Flutter/ephemeral/.symlinks/plugins/flutter_inappwebview_macos/macos
+  FlutterMacOS:
+    :path: Flutter/ephemeral
+  komodo_defi_framework:
+    :path: Flutter/ephemeral/.symlinks/plugins/komodo_defi_framework/macos
+
+SPEC CHECKSUMS:
+  flutter_inappwebview_macos: c2d68649f9f8f1831bfcd98d73fd6256366d9d1d
+  FlutterMacOS: c232990155153907050900a2e175c7773903ba4e
+  komodo_defi_framework: 2e2b89505f158840822ed30ffc7589ff8035e248
+  OrderedSet: e539b66b644ff081c73a262d24ad552a69be3a94
+
+PODFILE CHECKSUM: a890bc27443c296eb8ca4510f54c35d2e0f66ed0
+
+COCOAPODS: 1.17.0

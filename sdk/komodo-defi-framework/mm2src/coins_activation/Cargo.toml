@@ -1,0 +1,46 @@
+[package]
+name = "coins_activation"
+version = "0.1.0"
+edition = "2018"
+
+[lib]
+doctest = false
+
+[features]
+default = ["utxo-walletconnect"]
+utxo-walletconnect = ["coins/utxo-walletconnect"]
+for-tests = []
+
+[dependencies]
+async-trait.workspace = true
+coins = { path = "../coins", default-features = false }
+common = { path = "../common" }
+crypto = { path = "../crypto" }
+derive_more.workspace = true
+ethereum-types.workspace = true
+futures = { workspace = true, features = ["compat", "async-await"] }
+hex.workspace = true
+kdf_walletconnect = { path = "../kdf_walletconnect" }
+mm2_core = { path = "../mm2_core" }
+mm2_err_handle = { path = "../mm2_err_handle" }
+mm2_event_stream = { path = "../mm2_event_stream" }
+mm2_metrics = { path = "../mm2_metrics" }
+mm2_number = { path = "../mm2_number" }
+parking_lot = { workspace = true }
+rpc = { path = "../mm2_bitcoin/rpc" }
+rpc_task = { path = "../rpc_task" }
+ser_error = { path = "../derives/ser_error" }
+ser_error_derive = { path = "../derives/ser_error_derive" }
+serde.workspace = true
+serde_derive.workspace = true
+serde_json = { workspace = true, features = ["preserve_order", "raw_value"] }
+url.workspace = true
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+mm2_metamask = { path = "../mm2_metamask" }
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+lightning.workspace = true
+lightning-background-processor.workspace = true
+lightning-invoice.workspace = true
+secp256k1v24.workspace = true

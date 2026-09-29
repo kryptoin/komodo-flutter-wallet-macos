@@ -1,0 +1,67 @@
+# Support for split-debuginfo [should eventually](https://github.com/rust-lang/rust/issues/34651) land,
+# hopefully giving us an out-of-the-box way to separate the code from the debugging information.
+# We should use the "objcopy --only-keep-debug" and "add-symbol-file" meanwhile
+# and separating stack tracing into raw trace and symbolication parts.
+
+[package]
+name = "mm2_bin_lib"
+version = "3.0.0-beta"
+authors = ["James Lee", "Artem Pikulin", "Artem Grinblat", "Omar S.", "Onur Ozkan", "Alina Sharon", "Caglar Kaya", "Cipi", "Sergey Boiko", "Samuel Onoja", "Roman Sztergbaum", "Kadan Stadelmann <ca333@komodoplatform.com>", "Dimxy", "Omer Yacine", "DeckerSU", "dragonhound <smk@komodoplatform>", "Guru Charan Gupta", "Devin AI"]
+edition = "2018"
+default-run = "kdf"
+
+[features]
+custom-swap-locktime = ["mm2_main/custom-swap-locktime"] # only for testing purposes, should never be activated on release builds.
+native = ["mm2_main/native"] # Deprecated
+track-ctx-pointer = ["mm2_main/track-ctx-pointer"]
+zhtlc-native-tests = ["mm2_main/zhtlc-native-tests"]
+test-ext-api = ["mm2_main/test-ext-api"]
+
+[[bin]]
+name = "kdf"
+path = "src/mm2_bin.rs"
+test = false
+doctest = false
+bench = false
+
+[lib]
+name = "kdflib"
+crate-type = ["cdylib"]
+test = false
+doctest = false
+bench = false
+
+[dependencies]
+common = { path = "../common" }
+enum-primitive-derive.workspace = true
+libc.workspace = true
+mm2_core = { path = "../mm2_core" }
+# utxo-walletconnect is safe here: WASM library builds don't fully link like test binaries,
+# so duplicate secp256k1-sys symbols don't cause conflicts.
+mm2_main = { path = "../mm2_main", features = ["utxo-walletconnect"] }
+num-traits.workspace = true
+serde_json = { workspace = true, features = ["preserve_order", "raw_value"] }
+
+[build-dependencies]
+chrono = { workspace = true, features = ["now"] }
+gstuff.workspace = true
+regex.workspace = true
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+gstuff.workspace = true
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+js-sys.workspace = true
+mm2_rpc = { path = "../mm2_rpc", features=["rpc_facilities"] }
+serde.workspace = true
+wasm-bindgen.workspace = true
+wasm-bindgen-futures.workspace = true
+
+[target.x86_64-unknown-linux-gnu.dependencies]
+jemallocator.workspace = true
+
+[package.metadata.wasm-pack.profile.dev]
+wasm-opt = ['-O', '--enable-bulk-memory', '--enable-nontrapping-float-to-int']
+
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = ['-O', '--enable-bulk-memory', '--enable-nontrapping-float-to-int']

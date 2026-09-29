@@ -1,0 +1,1 @@
+enum TradingKind { taker, maker }

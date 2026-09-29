@@ -1,0 +1,16 @@
+[package]
+name = "mm2_number"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+doctest = false
+
+[dependencies]
+bigdecimal.workspace = true
+num-bigint.workspace = true
+num-rational.workspace = true
+num-traits.workspace = true
+paste.workspace = true
+serde = { workspace = true, features = ["serde_derive"] }
+serde_json = { workspace = true, features = ["preserve_order", "raw_value"] }

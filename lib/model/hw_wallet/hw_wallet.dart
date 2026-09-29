@@ -1,0 +1,4 @@
+enum WalletBrand {
+  trezor,
+  ledger,
+}

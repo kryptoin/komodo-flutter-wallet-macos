@@ -1,0 +1,18 @@
+[package]
+name = "mm2_err_handle"
+version = "0.1.0"
+edition = "2018"
+
+[lib]
+doctest = false
+
+[dependencies]
+futures01.workspace = true
+serde_json = { workspace = true, features = ["preserve_order", "raw_value"] }
+derive_more.workspace = true
+itertools.workspace = true
+serde = { workspace = true, features = ["derive"] }
+ser_error = { path = "../derives/ser_error" }
+ser_error_derive = { path = "../derives/ser_error_derive" }
+common = { path = "../common" }
+http.workspace = true

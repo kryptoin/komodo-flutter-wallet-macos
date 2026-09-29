@@ -1,0 +1,29 @@
+# Git attributes for kmdflutter-wallet
+#
+# Vendored SDK/Rust sources are committed, but build outputs are ignored
+# (see .gitignore). These rules keep diffs sane and preserve native binaries.
+
+# Native binaries — never diff, never autocrlf
+*.framework/** binary
+*.a binary
+*.dylib binary
+*.so binary
+*.dll binary
+*.dmg binary
+*.wasm binary
+
+# Archives / bundles fetched by the build transformer
+*.tar.gz binary
+*.zip binary
+
+# Generated lockfiles stay diffable as text
+pubspec.lock text
+macos/Podfile.lock text
+
+# Vendored sources: don't count toward language stats
+sdk/** linguist-vendored
+packages/** linguist-vendored=false
+lib/** linguist-vendored=false
+
+# Normalize shell scripts to LF on checkout
+*.sh text eol=lf

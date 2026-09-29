@@ -1,0 +1,19 @@
+[package]
+name = "mm2_eth"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+doctest = false
+
+[dependencies]
+ethabi.workspace = true
+ethkey.workspace = true
+hex.workspace = true
+indexmap.workspace = true
+itertools.workspace = true
+mm2_err_handle = { path = "../mm2_err_handle" }
+secp256k1 = { workspace = true, features = ["recovery"] }
+serde.workspace = true
+serde_json = { workspace = true, features = ["preserve_order", "raw_value"] }
+web3 = { workspace = true, default-features = false }

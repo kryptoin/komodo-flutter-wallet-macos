@@ -1,0 +1,23 @@
+[package]
+name = "mm2_metamask"
+version = "0.1.0"
+edition = "2021"
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+async-trait.workspace = true
+common = { path = "../common" }
+derive_more.workspace = true
+futures = { workspace = true }
+itertools.workspace = true
+js-sys.workspace = true
+jsonrpc-core.workspace = true
+lazy_static.workspace = true
+mm2_err_handle = { path = "../mm2_err_handle" }
+mm2_eth = { path = "../mm2_eth" }
+parking_lot = { workspace = true }
+serde.workspace = true
+serde_json = { workspace = true, features = ["preserve_order", "raw_value"] }
+serde_derive.workspace = true
+wasm-bindgen.workspace = true
+wasm-bindgen-futures.workspace = true
+web3 = { workspace = true, features = ["eip-1193"] }
