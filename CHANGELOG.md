@@ -2,6 +2,21 @@
 
 All notable changes to this fork are documented here.
 
+## [Unreleased]
+
+### Security
+- KDF startup config (wallet name, wallet password, `rpc_password`, optional
+  passphrase) is no longer passed on the `kdf` process command line, where
+  `ps`/`pgrep -afl`/Activity Monitor exposed it in plaintext. It is now
+  written to a mode-`0600` temp file handed over via `MM_CONF_PATH` and
+  deleted as soon as the RPC is confirmed up. Spawns with empty argv.
+  (`komodo_defi_framework` Dart side; no Rust change — KDF already
+  documented `MM_CONF_PATH`.)
+- Annotated the dormant third-party RPC forward-proxy constant in
+  `KdfOperationsRemote` with a security warning (remains disabled).
+- README debugging recipe for retrieving the local RPC password updated to
+  `defaults read` (the old `pgrep`-from-argv trick no longer applies).
+
 ## [1.0.0+1] — 2026-09-29
 
 ### Renamed

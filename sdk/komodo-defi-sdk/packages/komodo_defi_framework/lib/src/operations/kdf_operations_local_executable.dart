@@ -53,6 +53,12 @@ class KdfOperationsLocalExecutable implements IKdfOperations {
   StreamSubscription<List<int>>? stdoutSub;
   StreamSubscription<List<int>>? stderrSub;
 
+  /// The file the startup config (wallet name/password, rpc_password, ...)
+  /// was written to for handover to KDF via `MM_CONF_PATH`. Deleted as soon
+  /// as the RPC is confirmed up, so secrets don't sit on disk any longer
+  /// than needed. See [_startKdf].
+  File? _startupConfigFile;
+
   @override
   String get operationsName => 'Local Executable';
 
@@ -101,8 +107,8 @@ class KdfOperationsLocalExecutable implements IKdfOperations {
       final sensitiveArgs = JsonMap.of(params)..remove('coins');
 
       // Store the coins list in a temp file to avoid command line argument and
-      // environment variable value size limits (varies from 4-128 KB).
-      // Pass the config directly to the executable as an argument.
+      // environment variable value size limits (varies from 4-128 KB),
+      // handed over via MM_COINS_PATH (see below).
       final tempDir = await getTemporaryDirectory();
       coinsTempDir = await tempDir.createTemp('mm_coins_');
       final coinsConfigFile = File(p.join(coinsTempDir.path, 'kdf_coins.json'));
@@ -111,12 +117,32 @@ class KdfOperationsLocalExecutable implements IKdfOperations {
         flush: true,
       );
 
-      final environment = Map<String, String>.of(Platform.environment)
-        ..['MM_COINS_PATH'] = coinsConfigFile.path;
+      // Hand the sensitive startup config (wallet name/password, rpc_password,
+      // possibly passphrase) to KDF via a mode-0600 file + the MM_CONF_PATH
+      // environment variable instead of a command line argument. Anything
+      // that lists process args (ps, pgrep -afl, Activity Monitor, crash
+      // reports) would otherwise expose those secrets in plaintext — there is
+      // no fixing that from the command line itself. KDF reads the file once
+      // at startup (its `--help` documents MM_CONF_PATH; no config argv =>
+      // config file), and we delete it as soon as the RPC is confirmed up
+      // (see kdfMain). The containing temp dir is user-scoped on macOS, so
+      // the write-then-chmod window below is only reachable by same-user
+      // processes; chmod closes it for anything with directory access.
+      final configFile = File(p.join(coinsTempDir.path, 'kdf_conf.json'));
+      await configFile.writeAsString(sensitiveArgs.toJsonString(), flush: true);
+      await _restrictToOwner(configFile);
+      _startupConfigFile = configFile;
 
-      final newProcess = await Process.start(executablePath, [
-        sensitiveArgs.toJsonString(),
-      ], environment: environment);
+      final environment = Map<String, String>.of(Platform.environment)
+        ..['MM_COINS_PATH'] = coinsConfigFile.path
+        ..['MM_CONF_PATH'] = configFile.path;
+
+      // NB: no command line arguments on purpose — see above.
+      final newProcess = await Process.start(
+        executablePath,
+        <String>[],
+        environment: environment,
+      );
 
       _logCallback('Launched executable: $executablePath');
       _attachProcessListeners(newProcess, coinsTempDir);
@@ -130,6 +156,7 @@ class KdfOperationsLocalExecutable implements IKdfOperations {
         _logCallback('Failed to delete temporary directory: $error');
         return Directory('');
       });
+      _startupConfigFile = null;
       if (e is KdfException) {
         rethrow;
       }
@@ -156,6 +183,44 @@ class KdfOperationsLocalExecutable implements IKdfOperations {
     }
   }
 
+  /// Restrict a file containing startup secrets to read/write by the owner
+  /// only (chmod 600). Non-fatal on failure: the parent temp dir is already
+  /// user-scoped on macOS, so this is defence in depth, not the only barrier.
+  Future<void> _restrictToOwner(File file) async {
+    if (!Platform.isLinux && !Platform.isMacOS) return;
+    try {
+      final result = await Process.run('chmod', ['600', file.path]);
+      if (result.exitCode != 0) {
+        _logCallback(
+          'Warning: could not restrict permissions on startup config file: '
+          '${result.stderr}',
+        );
+      }
+    } catch (error) {
+      _logCallback(
+        'Warning: could not restrict permissions on startup config file: '
+        '$error',
+      );
+    }
+  }
+
+  /// Deletes the startup config file (secrets) once KDF no longer needs it.
+  /// KDF reads the config exactly once, at startup, so this is safe once the
+  /// RPC is confirmed up; called again from process-exit cleanup as a
+  /// failsafe (no-op if already deleted).
+  Future<void> _deleteStartupConfigFile() async {
+    final file = _startupConfigFile;
+    _startupConfigFile = null;
+    if (file == null) return;
+    try {
+      if (await file.exists()) {
+        await file.delete();
+      }
+    } catch (error) {
+      _logCallback('Failed to delete startup config file: $error');
+    }
+  }
+
   void _attachProcessListeners(Process newProcess, Directory tempDir) {
     stdoutSub = newProcess.stdout.listen((event) {
       _logCallback('[INFO]: ${String.fromCharCodes(event)}');
@@ -175,6 +240,11 @@ class KdfOperationsLocalExecutable implements IKdfOperations {
       _logCallback('KDF process exited with code: $exitCode');
       await stdoutSub?.cancel();
       await stderrSub?.cancel();
+
+      // Failsafe: if startup never confirmed the config file deletion,
+      // remove it now (the temp dir delete below would cover it too, but
+      // this keeps the field consistent).
+      await _deleteStartupConfigFile();
 
       await tempDir.delete(recursive: true);
       _logCallback('Temporary directory deleted successfully.');
@@ -217,6 +287,9 @@ class KdfOperationsLocalExecutable implements IKdfOperations {
       }
 
       if (await isRunning()) {
+        // KDF has parsed its startup config — remove the file holding the
+        // wallet/rpc secrets so it doesn't linger on disk (see _startKdf).
+        await _deleteStartupConfigFile();
         return KdfStartupResult.ok;
       }
 

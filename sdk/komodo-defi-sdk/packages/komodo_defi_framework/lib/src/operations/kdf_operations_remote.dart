@@ -27,6 +27,10 @@ class KdfOperationsRemote implements IKdfOperations {
 
   Uri get _baseUrl => _safeRpcUrl(_rpcUrl);
 
+  // SECURITY: third-party forward proxy. Enabling `_proxyRequests` would
+  // tunnel every RPC request — including the JSON body carrying `userpass` —
+  // through this third-party host. Keep `_proxyRequests` false unless you
+  // fully trust the proxy operator; it exists only as a web/CORS stopgap.
   static const String _forwardProxy =
       'https://proxy-se-push.go-away-bugs.co.za/?target=';
 

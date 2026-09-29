@@ -181,14 +181,23 @@ Passed as `--dart-define`s (wired through the build transformer):
 
 ### Debugging tips
 
-- **Query KDF directly** while the app runs (password is in the `kdf` process arguments):
+- **Query KDF directly** while the app runs (the RPC password is no longer
+  passed on the `kdf` command line — startup config goes via a short-lived
+  `MM_CONF_PATH` file that is deleted once the RPC is up, so `ps`/`pgrep -afl`
+  show no secrets):
 
   ```bash
-  RPCPASS=$(pgrep -fl "Helpers/kdf" | head -1 | sed -n 's/.*rpc_password":"\([^"]*\)".*/\1/p')
+  # Local dev builds (keychain unavailable → SharedPreferences fallback):
+  # NB: flutter shared_preferences prefixes stored keys with "flutter."
+  RPCPASS=$(defaults read com.komodo.wallet flutter.rpc_password)
   curl -s -u "user:$RPCPASS" \
     -d '{"userpass":"'$RPCPASS'","method":"get_enabled_coins","params":{}}' \
     http://127.0.0.1:7783
   ```
+
+  For properly signed builds the password lives in the Keychain instead —
+  look it up in Keychain Access (service: app bundle id, account:
+  `rpc_password`).
 
   Useful methods: `get_enabled_coins`, `my_balance` (legacy/Iguana wallets), `task::account_balance::init|status` (HD wallets), `orderbook`, `my_orders`.
 
