@@ -68,8 +68,8 @@ enum MainMenuValue {
       case MainMenuValue.support:
       case MainMenuValue.none:
       case MainMenuValue.bridge:
-        return false;
       case MainMenuValue.fiat:
+        return false;
       case MainMenuValue.marketMakerBot:
       case MainMenuValue.nft:
         return true;

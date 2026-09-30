@@ -133,7 +133,5 @@ airdex-build.tar.gz
 **/debug_data.json
 contrib/coins_config.json
 
-# Upstream leftovers
-AGENTS_1.md
-venv/
-.fvm/
+# Other
+/docs/*.md

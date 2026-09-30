@@ -4,6 +4,35 @@ All notable changes to this fork are documented here.
 
 ## [Unreleased]
 
+### Changed
+- The "New" badge no longer appears next to the Buy / Sell menu item
+  (still shown for NFT and Trading Bot).
+
+### Fixed
+- Swap page / Taker order subtab: the sell-coin and orders dropdowns now
+  report *why* they are empty. While the geo/trading status check is still
+  running they show a spinner instead of a bare "Nothing found"; when
+  trading is unavailable in the user's location they say so
+  (new shared `table_states.dart`, also used by the maker coin tables).
+- `BestOrdersRequest` ignored its `action` field and always sent `sell`.
+- Taker form: best orders refresh every time the order dropdown is opened
+  (previously only when it had no data), stale responses are dropped if the
+  sell coin changes while a request is in flight, and the loaded list stays
+  visible during refresh instead of flashing empty.
+
+### Added
+- `TtlCache` (`lib/shared/utils/ttl_cache.dart`): TTL cache with in-flight
+  request deduplication; errors and `null` results are never cached.
+  Wired into `DexRepository`, which the taker, maker, bridge and
+  market-maker-bot forms all share:
+  - `best_orders` → 10s TTL (also fixes repeated fetches on dropdown open);
+    `waitOrderbookAvailability` bypasses it via `skipCache: true`.
+  - max taker/maker volume → 15s, min trading volume → 60s: the four
+    independent 10s poll timers now collapse into single RPCs.
+  - trade preimage (fee estimate) → 5s, keyed by every request input.
+  - `invalidateCaches()` on logout / form reset (`TakerClear`),
+    `cacheStats()` for debugging.
+
 ### Security
 - KDF startup config (wallet name, wallet password, `rpc_password`, optional
   passphrase) is no longer passed on the `kdf` process command line, where

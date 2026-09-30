@@ -6,6 +6,7 @@ import 'package:web_dex/bloc/trading_status/trading_status_bloc.dart';
 import 'package:web_dex/model/coin.dart';
 import 'package:web_dex/views/dex/simple/form/tables/nothing_found.dart';
 import 'package:web_dex/views/dex/simple/form/tables/orders_table/grouped_list_view.dart';
+import 'package:web_dex/views/dex/simple/form/tables/table_states.dart';
 import 'package:web_dex/views/dex/simple/form/tables/table_utils.dart';
 
 class CoinsTableContent extends StatelessWidget {
@@ -26,6 +27,9 @@ class CoinsTableContent extends StatelessWidget {
     // Following BLoC best practices: widgets should rebuild when dependent bloc states change.
     return BlocBuilder<TradingStatusBloc, TradingStatusState>(
       builder: (context, tradingStatus) {
+        final Widget? placeholder = tradingStatusPlaceholder(tradingStatus);
+        if (placeholder != null) return placeholder;
+
         return BlocBuilder<CoinsBloc, CoinsState>(
           builder: (context, coinsState) {
             final coins = prepareCoinsForTable(

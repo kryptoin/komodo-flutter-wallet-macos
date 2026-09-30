@@ -12,6 +12,7 @@ import 'package:web_dex/mm2/mm2_api/rpc/base.dart';
 import 'package:web_dex/mm2/mm2_api/rpc/best_orders/best_orders.dart';
 import 'package:web_dex/model/authorize_mode.dart';
 import 'package:web_dex/views/dex/simple/form/tables/orders_table/grouped_list_view.dart';
+import 'package:web_dex/views/dex/simple/form/tables/table_states.dart';
 import 'package:web_dex/views/dex/simple/form/tables/table_utils.dart';
 import 'package:komodo_ui_kit/komodo_ui_kit.dart';
 import 'package:web_dex/router/state/routing_state.dart';
@@ -35,6 +36,9 @@ class OrdersTableContent extends StatelessWidget {
     // Following BLoC best practices: widgets should rebuild when dependent bloc states change.
     return BlocBuilder<TradingStatusBloc, TradingStatusState>(
       builder: (context, tradingStatus) {
+        final Widget? placeholder = tradingStatusPlaceholder(tradingStatus);
+        if (placeholder != null) return placeholder;
+
         return BlocSelector<TakerBloc, TakerState, BestOrders?>(
           selector: (state) => state.bestOrders,
           builder: (context, bestOrders) {

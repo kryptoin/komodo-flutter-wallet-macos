@@ -359,10 +359,15 @@ class TakerBloc extends Bloc<TakerEvent, TakerState> {
   ) async {
     final Coin? coin = state.sellCoin;
 
-    emit(state.copyWith(bestOrders: () => null));
+    if (coin == null) {
+      emit(state.copyWith(bestOrders: () => null));
+      return;
+    }
 
-    if (coin == null) return;
-
+    // Note: any previously loaded list is intentionally kept visible while
+    // the refresh is in flight (the repository serves it from a short-lived
+    // cache anyway); a coin change nulls bestOrders separately in
+    // [_onSetSellCoin].
     final BestOrders bestOrders = await _dexRepo.getBestOrders(
       BestOrdersRequest(
         coin: coin.abbr,
@@ -371,6 +376,10 @@ class TakerBloc extends Bloc<TakerEvent, TakerState> {
         action: 'sell',
       ),
     );
+
+    // The sell coin changed while the request was in flight - drop the
+    // stale response instead of showing orders for the previous coin.
+    if (state.sellCoin?.abbr != coin.abbr) return;
 
     /// Unsupported coins like ARRR cause downstream errors, so we need to
     /// remove them from the list here
@@ -410,23 +419,22 @@ class TakerBloc extends Bloc<TakerEvent, TakerState> {
       return;
     }
 
+    final bool isOpening = !state.showOrderSelector;
+
     emit(
       state.copyWith(
-        showOrderSelector: () => !state.showOrderSelector,
+        showOrderSelector: () => isOpening,
         showCoinSelector: () => false,
-        bestOrders: _haveBestOrders ? () => state.bestOrders : () => null,
       ),
     );
 
-    if (state.showOrderSelector && !_haveBestOrders) {
+    if (isOpening) {
+      // Refresh on every open. The repository caches best_orders for a few
+      // seconds, so reopening the dropdown quickly is free, while a later
+      // open gets fresh liquidity instead of whatever was loaded when the
+      // form was first built.
       add(TakerUpdateBestOrders());
     }
-  }
-
-  bool get _haveBestOrders {
-    return state.bestOrders != null &&
-        state.bestOrders!.result != null &&
-        state.bestOrders!.result!.isNotEmpty;
   }
 
   void _onCoinSelectorOpen(
@@ -445,6 +453,10 @@ class TakerBloc extends Bloc<TakerEvent, TakerState> {
 
   void _onClear(TakerClear event, Emitter<TakerState> emit) {
     _maxSellAmountTimer?.cancel();
+    // TakerClear is also dispatched on logout (see the auth listener in the
+    // constructor), so this is the hook that keeps balance-derived cached
+    // volumes from leaking into the next session.
+    _dexRepo.invalidateCaches();
 
     emit(
       TakerState.initial().copyWith(

@@ -26,12 +26,49 @@ import 'package:web_dex/model/main_menu_value.dart';
 import 'package:web_dex/model/text_error.dart';
 import 'package:web_dex/model/trade_preimage.dart';
 import 'package:web_dex/services/mappers/trade_preimage_mappers.dart';
+import 'package:web_dex/shared/utils/ttl_cache.dart';
 import 'package:web_dex/shared/utils/utils.dart';
 
 class DexRepository {
   DexRepository(this._mm2Api);
 
   final Mm2Api _mm2Api;
+
+  // Short-lived caches that collapse the burst of identical RPCs fired by
+  // the taker/maker/bridge/market-maker-bot forms, which all share this
+  // repository and poll on their own timers (e.g. max volume every 10s).
+  // Errors are never cached (see cacheIf below) so retries always hit the
+  // network again.
+  final TtlCache<String, BestOrders> _bestOrdersCache =
+      TtlCache<String, BestOrders>(
+        name: 'best_orders',
+        defaultTtl: const Duration(seconds: 10),
+      );
+  final TtlCache<String, Rational?> _volumeCache = TtlCache<String, Rational?>(
+    name: 'trading_volume',
+    defaultTtl: const Duration(seconds: 15),
+  );
+  final TtlCache<String, DataFromService<TradePreimage, BaseError>>
+  _preimageCache = TtlCache<String, DataFromService<TradePreimage, BaseError>>(
+    name: 'trade_preimage',
+    defaultTtl: const Duration(seconds: 5),
+  );
+
+  /// Drops every cached DEX value (best orders, volume limits, fee
+  /// preimages). Called on logout / form reset so balance-derived values
+  /// are never reused across sessions.
+  void invalidateCaches() {
+    _bestOrdersCache.clear();
+    _volumeCache.clear();
+    _preimageCache.clear();
+  }
+
+  /// Aggregate cache counters, for debugging/logging.
+  String cacheStats() => [
+    _bestOrdersCache,
+    _volumeCache,
+    _preimageCache,
+  ].map((cache) => cache.statsString()).join('\n');
 
   Future<SellResponse> sell(SellRequest request) async {
     try {
@@ -49,7 +86,28 @@ class DexRepository {
     String swapMethod, [
     Rational? volume,
     bool max = false,
-  ]) async {
+  ]) {
+    // Every input that can change the fee estimate is part of the key, so
+    // a retry after editing the amount always reaches the network while
+    // identical requests (burst validation, 20s bridge fee timer, ...) are
+    // served once per TTL.
+    final String cacheKey =
+        'preimage|$base|$rel|$price|$swapMethod|${volume ?? ''}|$max';
+    return _preimageCache.get(
+      cacheKey,
+      () => _fetchTradePreimage(base, rel, price, swapMethod, volume, max),
+      cacheIf: (result) => result.error == null,
+    );
+  }
+
+  Future<DataFromService<TradePreimage, BaseError>> _fetchTradePreimage(
+    String base,
+    String rel,
+    Rational price,
+    String swapMethod,
+    Rational? volume,
+    bool max,
+  ) async {
     final request = TradePreimageRequest(
       base: base,
       rel: rel,
@@ -94,44 +152,53 @@ class DexRepository {
     }
   }
 
-  Future<Rational?> getMaxTakerVolume(String coinAbbr) async {
-    final MaxTakerVolResponse? response = await _mm2Api.getMaxTakerVolume(
-      MaxTakerVolRequest(coin: coinAbbr),
-    );
-    if (response == null) {
-      return null;
-    }
-
-    return fract2rat(response.result.toJson());
+  Future<Rational?> getMaxTakerVolume(String coinAbbr) {
+    return _volumeCache.get('max_taker_vol|$coinAbbr', () async {
+      final MaxTakerVolResponse? response = await _mm2Api.getMaxTakerVolume(
+        MaxTakerVolRequest(coin: coinAbbr),
+      );
+      if (response == null) {
+        return null;
+      }
+      return fract2rat(response.result.toJson());
+    });
   }
 
-  Future<Rational?> getMaxMakerVolume(String coinAbbr) async {
-    final MaxMakerVolResponse? response = await _mm2Api.getMaxMakerVolume(
-      MaxMakerVolRequest(coin: coinAbbr),
-    );
-    if (response == null) {
-      return null;
-    }
-
-    return fract2rat(response.volume.toFractionalJson());
+  Future<Rational?> getMaxMakerVolume(String coinAbbr) {
+    return _volumeCache.get('max_maker_vol|$coinAbbr', () async {
+      final MaxMakerVolResponse? response = await _mm2Api.getMaxMakerVolume(
+        MaxMakerVolRequest(coin: coinAbbr),
+      );
+      if (response == null) {
+        return null;
+      }
+      return fract2rat(response.volume.toFractionalJson());
+    });
   }
 
-  Future<Rational?> getMinTradingVolume(String coinAbbr) async {
-    final MinTradingVolResponse? response = await _mm2Api.getMinTradingVol(
-      MinTradingVolRequest(coin: coinAbbr),
-    );
-    if (response == null) {
-      return null;
-    }
-
-    return fract2rat(response.result.toJson());
+  Future<Rational?> getMinTradingVolume(String coinAbbr) {
+    // The minimum trade volume is node configuration and effectively
+    // static, so it can be shared for much longer than the balance-derived
+    // max volumes above.
+    return _volumeCache.get('min_trading_vol|$coinAbbr', () async {
+      final MinTradingVolResponse? response = await _mm2Api.getMinTradingVol(
+        MinTradingVolRequest(coin: coinAbbr),
+      );
+      if (response == null) {
+        return null;
+      }
+      return fract2rat(response.result.toJson());
+    }, ttl: const Duration(seconds: 60));
   }
 
   Future<List<Swap>?> getRecentSwaps(MyRecentSwapsRequest request) async {
     return null;
   }
 
-  Future<BestOrders> getBestOrders(BestOrdersRequest request) async {
+  Future<BestOrders> getBestOrders(
+    BestOrdersRequest request, {
+    bool skipCache = false,
+  }) async {
     // Only allow best_orders when user is on Swap (DEX) or Bridge pages
     final MainMenuValue current = routingState.selectedMenu;
     final bool isTradingPage =
@@ -150,6 +217,19 @@ class DexRepository {
       );
     }
 
+    if (skipCache) return _fetchBestOrders(request);
+
+    final String cacheKey =
+        'best_orders|${request.coin}|${request.action}|${request.type.name}|'
+        '${request.volume ?? request.number}';
+    return _bestOrdersCache.get(
+      cacheKey,
+      () => _fetchBestOrders(request),
+      cacheIf: (orders) => orders.error == null,
+    );
+  }
+
+  Future<BestOrders> _fetchBestOrders(BestOrdersRequest request) async {
     Map<String, dynamic>? response;
     try {
       response = await _mm2Api.getBestOrders(request);
@@ -245,6 +325,9 @@ class DexRepository {
           number: 1,
           action: 'sell',
         ),
+        // Fresh liquidity is exactly what we are waiting for, so bypass
+        // the cache on every retry.
+        skipCache: true,
       );
 
       if (orders.result?.isNotEmpty ?? false) {
