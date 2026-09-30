@@ -19,6 +19,18 @@ All notable changes to this fork are documented here.
   (previously only when it had no data), stale responses are dropped if the
   sell coin changes while a request is in flight, and the loaded list stays
   visible during refresh instead of flashing empty.
+- CoinPaprika price fallback looked up ticker quotes under the requested
+  stablecoin id (`USDT`) while the provider maps stablecoins to their
+  underlying fiat before the API call (response is keyed `USD`), so the
+  lookup always missed and every fetch threw. Assets without a CoinGecko
+  fallback therefore had no price at all — e.g. AVN (Avian). Lookup now
+  uses the same mapping for current price and 24h change.
+- Wallet coin rows rounded sub-cent prices to `$0.00` (SC, TRMP, …) with a
+  fixed 2-decimal formatter. New `formatUsdPrice()` shows Bitcoin-style
+  small values instead (`$0.001046`, `$0.00000216`, `$0.00000091`) while
+  keeping grouped 2-decimal display for values ≥ $0.01; applied to the
+  wallet list rows (desktop + grouped ticker), statistics header and coin
+  details price.
 
 ### Added
 - `TtlCache` (`lib/shared/utils/ttl_cache.dart`): TTL cache with in-flight

@@ -12,6 +12,7 @@ import 'package:web_dex/bloc/coins_bloc/coins_bloc.dart';
 import 'package:web_dex/common/screen.dart';
 import 'package:web_dex/generated/codegen_loader.g.dart';
 import 'package:web_dex/model/coin.dart';
+import 'package:web_dex/shared/utils/formatters.dart';
 import 'package:web_dex/shared/utils/utils.dart';
 import 'package:web_dex/shared/widgets/coin_balance.dart';
 import 'package:web_dex/shared/widgets/coin_fiat_balance.dart';
@@ -187,7 +188,7 @@ class _ExpandableCoinListItemState extends State<ExpandableCoinListItem> {
                       return const SizedBox.shrink();
                     }
                     return Text(
-                      '\$${NumberFormat("#,##0.00").format(headlineUsd)}',
+                      '\$${formatUsdPrice(headlineUsd)}',
                       style: theme.textTheme.headlineMedium,
                     );
                   },
@@ -226,8 +227,7 @@ class _ExpandableCoinListItemState extends State<ExpandableCoinListItem> {
                       value: change24hValue,
                       upColor: themeCustom.increaseColor,
                       downColor: themeCustom.decreaseColor,
-                      valueFormatter: (value) =>
-                          NumberFormat.currency(symbol: '\$').format(value),
+                      valueFormatter: (value) => '\$${formatUsdPrice(value)}',
                       iconSize: 12,
                       spacing: 2,
                       textStyle: theme.textTheme.bodySmall,
@@ -285,8 +285,7 @@ class _ExpandableCoinListItemState extends State<ExpandableCoinListItem> {
                 value: change24hValue,
                 upColor: themeCustom.increaseColor,
                 downColor: themeCustom.decreaseColor,
-                valueFormatter: (value) =>
-                    NumberFormat.currency(symbol: '\$').format(value),
+                valueFormatter: (value) => '\$${formatUsdPrice(value)}',
               );
             },
           ),

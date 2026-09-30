@@ -82,7 +82,7 @@ class _AssetFiatPrice extends StatelessWidget {
           children: [
             Text('\$', style: style),
             Text(
-              formatAmt(usdPrice),
+              formatUsdPrice(usdPrice),
               key: Key('fiat-price-${coin.abbr.toLowerCase()}'),
               style: style,
             ),

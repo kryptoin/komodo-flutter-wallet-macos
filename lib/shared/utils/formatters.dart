@@ -243,6 +243,54 @@ String formatAmt(double value) {
   return sign + valueAbs.toStringAsPrecision(maxDigits);
 }
 
+/// Prices at or above one cent are shown grouped with two decimals, e.g.
+/// `83,517.31`.
+const minUsdGroupedValue = 0.01;
+
+/// Smaller than this a price cannot be represented meaningfully within
+/// [maxUsdPriceDecimals] decimal places, so [formatAmt] handles it with its
+/// extended precision instead.
+const minUsdPriceValue = 1e-8;
+
+/// Crypto display convention: never more than eight decimal places.
+const maxUsdPriceDecimals = 8;
+
+/// Significant digits shown after leading zeros for sub-cent prices, e.g.
+/// `0.001046` (SC) or `0.00000216` (TRMP).
+const usdPriceSignificantDigits = 4;
+
+final usdPriceFormatter = NumberFormat('#,##0.00');
+
+/// Formats a USD price for display.
+///
+/// Values of one cent or more keep the familiar grouped two-decimal format
+/// (`$83,517.31`, `-$12.40`). Smaller values are shown Bitcoin-style with up
+/// to [usdPriceSignificantDigits] significant digits after leading zeros
+/// instead of being rounded away to `$0.00`: `$0.001046`, `$0.00000216`,
+/// `$0.00000091`.
+String formatUsdPrice(double value) {
+  if (!value.isFinite) return 'infinity';
+  if (value == 0) return '0.00';
+
+  final sign = value < 0 ? '-' : '';
+  final valueAbs = value.abs();
+
+  if (valueAbs < minUsdPriceValue) {
+    return formatAmt(value);
+  }
+
+  if (valueAbs >= minUsdGroupedValue) {
+    return sign + usdPriceFormatter.format(valueAbs);
+  }
+
+  final leadingZeros = getLeadingZeros(valueAbs);
+  final decimals = math.min(
+    maxUsdPriceDecimals,
+    leadingZeros + usdPriceSignificantDigits,
+  );
+  return sign + cutTrailingZeros(valueAbs.toStringAsFixed(decimals));
+}
+
 const tenBillion = 1e+10;
 const billion = 1e+9;
 const lowAmount = 1e-8;

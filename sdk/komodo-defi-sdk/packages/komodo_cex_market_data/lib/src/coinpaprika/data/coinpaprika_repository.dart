@@ -271,6 +271,24 @@ class CoinPaprikaRepository implements CexRepository {
     return _idResolutionStrategy.canResolve(assetId);
   }
 
+  /// Quote key under which CoinPaprika returns ticker data for [quote].
+  ///
+  /// The provider maps stablecoins to their underlying fiat before building
+  /// API requests (e.g. USDT -> USD), and the API responds with quotes keyed
+  /// by that mapped currency (e.g. `USD`). Requesting the raw stablecoin id
+  /// here would always miss, so map the quote the same way before lookup.
+  String _tickerQuoteKey(QuoteCurrency quote) {
+    return quote
+        .when(
+          fiat: (symbol, displayName) => symbol,
+          stablecoin: (symbol, displayName, underlyingFiat) =>
+              underlyingFiat.symbol,
+          crypto: (symbol, displayName) => symbol,
+          commodity: (symbol, displayName) => symbol,
+        )
+        .toUpperCase();
+  }
+
   @override
   Future<Decimal> getCoinFiatPrice(
     AssetId assetId, {
@@ -306,7 +324,9 @@ class CoinPaprikaRepository implements CexRepository {
       quotes: [fiatCurrency],
     );
 
-    final quoteData = ticker.quotes[quoteCurrencyId];
+    final quoteData =
+        ticker.quotes[_tickerQuoteKey(fiatCurrency)] ??
+        ticker.quotes[quoteCurrencyId];
     if (quoteData == null) {
       throw Exception(
         'No price data found for ${assetId.id} in $quoteCurrencyId',
@@ -380,7 +400,9 @@ class CoinPaprikaRepository implements CexRepository {
       quotes: [fiatCurrency],
     );
 
-    final quoteData = ticker.quotes[quoteCurrencyId];
+    final quoteData =
+        ticker.quotes[_tickerQuoteKey(fiatCurrency)] ??
+        ticker.quotes[quoteCurrencyId];
     if (quoteData == null) {
       throw Exception(
         'No price change data found for ${assetId.id} in $quoteCurrencyId',

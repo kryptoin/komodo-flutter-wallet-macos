@@ -10,6 +10,7 @@ import 'package:web_dex/bloc/cex_market_data/price_chart/models/time_period.dart
 import 'package:web_dex/bloc/cex_market_data/price_chart/price_chart_bloc.dart';
 import 'package:web_dex/bloc/cex_market_data/price_chart/price_chart_event.dart';
 import 'package:web_dex/bloc/cex_market_data/price_chart/price_chart_state.dart';
+import 'package:web_dex/shared/utils/formatters.dart';
 import 'package:web_dex/shared/utils/utils.dart';
 import 'package:web_dex/shared/widgets/coin_select_item_widget.dart';
 
@@ -44,10 +45,7 @@ class PriceChartPage extends StatelessWidget {
                           size: 22,
                         ),
                   leadingText: Text(
-                    NumberFormat.currency(symbol: '\$', decimalDigits: 4)
-                        .format(
-                      state.data.firstOrNull?.data.lastOrNull?.usdValue ?? 0,
-                    ),
+                    '\$${formatUsdPrice(state.data.firstOrNull?.data.lastOrNull?.usdValue ?? 0)}',
                   ),
                   availableCoins: state.availableCoins.keys.toList(),
                   selectedCoinId: state.data.firstOrNull?.info.ticker,

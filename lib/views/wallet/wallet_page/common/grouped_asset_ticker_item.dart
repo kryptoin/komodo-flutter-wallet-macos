@@ -12,6 +12,7 @@ import 'package:komodo_ui/komodo_ui.dart';
 import 'package:web_dex/bloc/coins_bloc/coins_bloc.dart';
 import 'package:web_dex/common/screen.dart';
 import 'package:web_dex/generated/codegen_loader.g.dart';
+import 'package:web_dex/shared/utils/formatters.dart';
 import 'package:web_dex/shared/widgets/asset_item/asset_item.dart';
 import 'package:web_dex/shared/widgets/asset_item/asset_item_size.dart';
 import 'package:web_dex/views/wallet/coin_details/coin_details_info/charts/coin_sparkline.dart';
@@ -75,10 +76,7 @@ class _GroupedAssetTickerItemState extends State<GroupedAssetTickerItem> {
     final price = context.watch<CoinsBloc>().state.getPriceForAsset(
       _primaryAsset,
     );
-    final priceFormatter = NumberFormat.currency(
-      symbol: '\$',
-      decimalDigits: 2,
-    );
+    final priceFormatter = formatUsdPrice;
 
     final theme = Theme.of(context);
     final sparklineRepository = RepositoryProvider.of<SparklineRepository>(
@@ -122,11 +120,9 @@ class _GroupedAssetTickerItemState extends State<GroupedAssetTickerItem> {
                         flex: 2,
                         child: BlocBuilder<CoinsBloc, CoinsState>(
                           builder: (context, state) {
-                            // Double conversion required to fix the
-                            // `noSuchMethod` error in the `format` method.
                             final priceValue = price?.price?.toDouble();
                             final formattedPrice = priceValue != null
-                                ? priceFormatter.format(priceValue)
+                                ? priceFormatter(priceValue)
                                 : '';
                             return Text(
                               formattedPrice,
@@ -178,8 +174,7 @@ class _GroupedAssetTickerItemState extends State<GroupedAssetTickerItem> {
                                           ? price?.price?.toDouble()
                                           : null,
                                       valueFormatter: (price?.price != null)
-                                          ? (value) =>
-                                                priceFormatter.format(value)
+                                          ? (value) => priceFormatter(value)
                                           : null,
                                     ),
                                   ),
